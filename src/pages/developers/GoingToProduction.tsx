@@ -11,11 +11,12 @@ const GoingToProduction = () => {
 
       <DocSection title="Checklist">
         <ol>
-          <li>✅ Complete staging sign-off — test all flows end-to-end</li>
-          <li>✅ Get production base URL and API key from Steller</li>
-          <li>✅ Update your configuration with production values</li>
-          <li>✅ Place one test order in production</li>
-          <li>✅ Contact <Link to="/developers/support" className="doc-link">support</Link> if you need help</li>
+          <li>Complete staging sign-off — place at least one successful end-to-end test order on staging (catalog → place order → poll to Completed → verify serial and PIN received)</li>
+          <li>Contact Steller to request production credentials</li>
+          <li>Get your production base URL and API key from Steller</li>
+          <li>Update your integration config — replace staging base URL and API key with production values</li>
+          <li>Place one small test order on production to confirm everything works</li>
+          <li>Contact <Link to="/developers/support" className="doc-link">support</Link> if anything is unclear — include your <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">correlationId</code>, <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">orderId</code>, and timestamp</li>
         </ol>
       </DocSection>
 
