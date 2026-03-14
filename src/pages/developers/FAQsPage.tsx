@@ -8,13 +8,13 @@ import {
 } from "@/components/ui/accordion";
 
 const faqs = [
-  { q: "How long does order fulfillment take?", a: "Most orders complete within seconds to a few minutes. Poll the order status endpoint or listen for webhooks." },
-  { q: "What do I do if I get a 429 error?", a: "Wait for the duration specified in the Retry-After header, then retry. For order creation, use the same referenceId to avoid double debits." },
-  { q: "How do I get production credentials?", a: "Contact Steller when you've completed staging testing. We'll provide your production base URL and API key." },
-  { q: "Where do I get my API key?", a: "Your API key is provided by Steller during onboarding. Contact support if you need a new one or rotation." },
-  { q: "Why is my catalog empty?", a: "Your catalog is partner-specific. If it's empty, your account may not be fully provisioned. Contact Steller." },
-  { q: "What happens if an order fails? Do I get a refund?", a: "Yes. If an order fails, the wallet debit is automatically reversed." },
-  { q: "What happens if I send the same referenceId twice?", a: "The API returns the existing order for that referenceId. No new order is created and no additional funds are debited." },
+  { q: "How long does order fulfillment take?", a: "Typically 1–2 minutes. Poll GET /api/orders/{id} every 2–5 seconds until status is Completed or Failed. Do not stop polling until you reach a terminal state." },
+  { q: "What do I do if I get a 429?", a: "Read the Retry-After header and wait that many seconds before retrying. Retry with the exact same referenceId to avoid a double charge." },
+  { q: "What happens if my order fails?", a: "Failed orders are refunded automatically to your wallet. You will not be charged for a failed order." },
+  { q: "What is referenceId and why does it matter?", a: "It is your unique identifier for each order. Always send a unique referenceId per order. If you retry a timed-out or failed request, use the same referenceId — the backend will return the existing order instead of creating a duplicate. Never reuse a referenceId for a different order." },
+  { q: "My catalog is empty — what do I do?", a: "Contact Steller to have products activated for your account. The catalog only shows products enabled for your partner account." },
+  { q: "How do I get production credentials?", a: "Complete staging sign-off (place at least one successful test order end-to-end), then contact Steller. Production credentials are issued after sign-off." },
+  { q: "Where do I find my API key?", a: "Your API key is provided by Steller when your partner account is set up. If you need a new key, contact Steller." },
 ];
 
 const FAQsPage = () => {
@@ -22,7 +22,7 @@ const FAQsPage = () => {
     <DocsLayout>
       <PageHeader title="FAQs" description="Common questions about integrating with Steller." />
 
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion type="multiple" defaultValue={faqs.map((_, i) => `faq-${i}`)} className="w-full">
         {faqs.map((faq, i) => (
           <AccordionItem key={i} value={`faq-${i}`}>
             <AccordionTrigger className="text-left text-foreground">

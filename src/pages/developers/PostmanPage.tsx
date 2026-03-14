@@ -28,7 +28,7 @@ const PostmanPage = () => {
       <DocSection title="Setup">
         <ol>
           <li>Import the collection and environment into Postman</li>
-          <li>Set <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">base_url</code> to your staging URL (e.g. <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">http://localhost:6091</code>)</li>
+          <li>Set <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">base_url</code> to your base URL (provided by Steller at onboarding)</li>
           <li>Set <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">api_key</code> to your API key</li>
           <li>Run requests — see <Link to="/developers/environments" className="doc-link">Environments</Link> for staging vs production</li>
         </ol>

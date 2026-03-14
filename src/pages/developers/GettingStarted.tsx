@@ -23,7 +23,7 @@ const GettingStarted = () => {
 
       <DocSection title="Base URL">
         <ul>
-          <li><strong>Staging:</strong> <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">http://YOUR_STAGING_HOST:6091</code></li>
+          <li><strong>Staging:</strong> <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">YOUR_BASE_URL</code> (Base URL provided by Steller at onboarding)</li>
           <li><strong>Production:</strong> URL provided by Steller at go-live</li>
         </ul>
       </DocSection>

@@ -12,12 +12,12 @@ const ErrorReference = () => {
 
       <DocSection title="Standard error shape">
         <CodeBlock language="json" code={`{
-  "status": "error",
-  "message": "Descriptive error message",
-  "errorCode": "ERROR_CODE",
-  "statusCode": 400,
-  "errors": [],
-  "correlationId": "abc-123-def-456"
+  "status": false,
+  "message": "Description of the error",
+  "data": null,
+  "errorCode": "ERROR_CODE_HERE",
+  "statusCode": 401,
+  "errors": { "correlationId": "abc-123-def-456" }
 }`} />
       </DocSection>
 
@@ -25,12 +25,12 @@ const ErrorReference = () => {
         <DocTable
           headers={["HTTP", "errorCode", "Meaning", "What to do"]}
           rows={[
-            ["400", "VALIDATION_ERROR", "Invalid request body or params", "Check request against API reference"],
-            ["401", "UNAUTHORIZED", "Missing or invalid API key", "Verify x-api-key header"],
-            ["403", "FORBIDDEN", "Not authorized for this resource", "Check API key permissions"],
+            ["400", "(varies)", "Invalid request", "Wrong sku (use SKU from catalog), faceValue out of range, insufficient wallet balance, or referenceId already used for a different order."],
+            ["401", "API_KEY_MISSING", "API key not provided", "Include X-Api-Key (or x-api-key) header on every request."],
+            ["403", "API_KEY_INVALID", "API key invalid or revoked", "Check the key and contact Steller if the issue persists."],
             ["404", "NOT_FOUND", "Resource does not exist", "Verify ID or endpoint path"],
-            ["429", "RATE_LIMITED", "Too many requests", "Wait for Retry-After, then retry"],
-            ["500", "INTERNAL_ERROR", "Server error", "Retry with back-off; contact support if persistent"],
+            ["429", "(varies)", "Rate limit exceeded", "Read Retry-After header. Retry with same referenceId."],
+            ["500", "(varies)", "Unexpected server error", "Note the correlationId from the response and include it when contacting support."],
           ]}
         />
       </DocSection>
@@ -39,9 +39,9 @@ const ErrorReference = () => {
         <DocTable
           headers={["HTTP", "Typical cause"]}
           rows={[
-            ["400", "Invalid SKU, face value, or missing referenceId"],
-            ["401", "Missing or invalid API key"],
-            ["403", "Insufficient wallet balance or key not authorized"],
+            ["400", "Invalid sku (use catalog), faceValue out of range, insufficient balance, or referenceId conflict"],
+            ["401", "Missing API key header"],
+            ["403", "API key invalid or inactive"],
           ]}
         />
       </DocSection>

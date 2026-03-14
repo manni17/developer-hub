@@ -28,8 +28,8 @@ x-api-key: YOUR_API_KEY`} />
         <DocTable
           headers={["HTTP", "errorCode", "Meaning"]}
           rows={[
-            ["401", "UNAUTHORIZED", "Missing or invalid API key"],
-            ["403", "FORBIDDEN", "Key valid but not authorized for this resource"],
+            ["401", "API_KEY_MISSING", "API key not provided"],
+            ["403", "API_KEY_INVALID", "API key invalid or revoked"],
           ]}
         />
       </DocSection>
@@ -58,10 +58,13 @@ x-api-key: YOUR_API_KEY`} />
           Sending the same referenceId returns the existing order — no double debit.
         </p>
         <CodeBlock language="json" code={`{
-  "skuId": "sku_abc123",
+  "sku": "sku_abc123",
   "faceValue": 25,
   "referenceId": "partner-order-001"
 }`} />
+        <p className="mt-2 text-muted-foreground text-sm">
+          SKU value comes from <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/brand/getCatalog</code> — use the <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">sku</code> field from each product.
+        </p>
       </DocSection>
 
       <DocSection title="Endpoints">
@@ -84,7 +87,7 @@ x-api-key: YOUR_API_KEY`} />
           <DocTable
             headers={["Field", "Type", "Required", "Description"]}
             rows={[
-              ["skuId", "string", "Yes", "SKU from catalog"],
+              ["sku", "string", "Yes", "SKU from catalog. Use the sku field from GET /api/brand/getCatalog."],
               ["faceValue", "number", "Yes", "Card value in catalog currency"],
               ["referenceId", "string", "Yes", "Your unique order reference"],
             ]}
@@ -135,11 +138,12 @@ x-api-key: YOUR_API_KEY`} />
 
       <DocSection title="Error handling">
         <CodeBlock language="json" code={`{
-  "status": "error",
-  "message": "Invalid SKU",
-  "errorCode": "INVALID_SKU",
-  "statusCode": 400,
-  "correlationId": "abc-123-def"
+  "status": false,
+  "message": "Description of the error",
+  "data": null,
+  "errorCode": "ERROR_CODE_HERE",
+  "statusCode": 401,
+  "errors": { "correlationId": "abc-123-def-456" }
 }`} />
         <p>See <Link to="/developers/error-reference" className="doc-link">Error reference</Link> for the full table.</p>
       </DocSection>
