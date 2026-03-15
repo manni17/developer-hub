@@ -23,8 +23,8 @@ const GettingStarted = () => {
 
       <DocSection title="Base URL">
         <ul>
-          <li><strong>Staging:</strong> <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">YOUR_BASE_URL</code> (Base URL provided by Steller at onboarding)</li>
-          <li><strong>Production:</strong> URL provided by Steller at go-live</li>
+          <li><strong>Staging:</strong> <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">{siteConfig.apiBaseUrlStaging}</code> — use this for integration testing and signup flows.</li>
+          <li><strong>Production:</strong> URL provided by Steller at go-live.</li>
         </ul>
       </DocSection>
 
@@ -32,13 +32,13 @@ const GettingStarted = () => {
         <h3 className="text-base font-medium mb-2 text-foreground">Get your catalog</h3>
         <CodeBlock
           language="bash"
-          code={`curl -X GET "YOUR_BASE_URL/api/brand/getCatalog" \\
+          code={`curl -X GET "${siteConfig.apiBaseUrlStaging}/api/brand/getCatalog" \\
   -H "x-api-key: YOUR_API_KEY"`}
         />
         <h3 className="text-base font-medium mb-2 mt-6 text-foreground">Check wallet</h3>
         <CodeBlock
           language="bash"
-          code={`curl -X GET "YOUR_BASE_URL/api/wallet/me" \\
+          code={`curl -X GET "${siteConfig.apiBaseUrlStaging}/api/Wallet" \\
   -H "x-api-key: YOUR_API_KEY"`}
         />
       </DocSection>

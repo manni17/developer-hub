@@ -11,8 +11,12 @@ const RateLimits = () => {
 
       <DocSection title="Partner API (x-api-key)">
         <DocTable
-          headers={["Limit", "Value"]}
-          rows={[["Requests per minute per API key", "100"]]}
+          headers={["Endpoint", "Limit", "Window"]}
+          rows={[
+            ["GET /api/brand/getCatalog", "50 requests", "per second"],
+            ["POST /api/Orders", "10 requests", "per second"],
+            ["Other endpoints", "30 requests", "per second"],
+          ]}
         />
         <p>
           If you exceed the limit, you'll receive a <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">429 Too Many Requests</code> response 
@@ -21,7 +25,7 @@ const RateLimits = () => {
       </DocSection>
 
       <DocSection title="Auth endpoints">
-        <p>Authentication endpoints (<code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">/api/auth</code>) have a separate, lower limit in production.</p>
+        <p>Authentication endpoints (<code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">/api/auth</code>) have stricter limits (10 req/s production, 500 req/s development) for DDoS protection.</p>
       </DocSection>
 
       <DocSection title="Vendor limits">

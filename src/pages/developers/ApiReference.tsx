@@ -40,7 +40,7 @@ x-api-key: YOUR_API_KEY`} />
 
       <DocSection title="Order lifecycle">
         <p>
-          <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">POST /api/orders</code> → poll <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/orders/:id</code> → Completed or Failed.
+          <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">POST /api/Orders</code> → poll <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/Orders/:id</code> → Completed or Failed.
         </p>
         <DocTable
           headers={["Status", "Description"]}
@@ -58,8 +58,12 @@ x-api-key: YOUR_API_KEY`} />
           Sending the same referenceId returns the existing order — no double debit.
         </p>
         <CodeBlock language="json" code={`{
-  "sku": "sku_abc123",
-  "faceValue": 25,
+  "items": [
+    {
+      "sku": "MOCK-ITUNES-25",
+      "quantity": 1
+    }
+  ],
   "referenceId": "partner-order-001"
 }`} />
         <p className="mt-2 text-muted-foreground text-sm">
@@ -81,15 +85,16 @@ x-api-key: YOUR_API_KEY`} />
         <div className="mb-4">
           <p className="flex items-center gap-2 mb-2">
             <MethodBadge method="POST" />
-            <code className="font-mono text-sm">/api/orders</code>
+            <code className="font-mono text-sm">/api/Orders</code>
           </p>
           <p>Create a new gift card order. Returns 202 with order ID.</p>
           <DocTable
             headers={["Field", "Type", "Required", "Description"]}
             rows={[
-              ["sku", "string", "Yes", "SKU from catalog. Use the sku field from GET /api/brand/getCatalog."],
-              ["faceValue", "number", "Yes", "Card value in catalog currency"],
-              ["referenceId", "string", "Yes", "Your unique order reference"],
+              ["items", "array", "Yes", "Array of items to order. Each item must have sku and quantity."],
+              ["items[].sku", "string", "Yes", "SKU from catalog (GET /api/brand/getCatalog)."],
+              ["items[].quantity", "number", "Yes", "Quantity to order."],
+              ["referenceId", "string", "Yes", "Your unique order reference (max 100 chars). For retries, use the same referenceId."],
             ]}
           />
         </div>
@@ -97,7 +102,7 @@ x-api-key: YOUR_API_KEY`} />
         <div className="mb-4">
           <p className="flex items-center gap-2 mb-2">
             <MethodBadge method="GET" />
-            <code className="font-mono text-sm">/api/orders/:id</code>
+            <code className="font-mono text-sm">/api/Orders/:id</code>
           </p>
           <p>Poll order status. Returns order details including status and card data when completed.</p>
         </div>
@@ -106,7 +111,7 @@ x-api-key: YOUR_API_KEY`} />
         <div className="mb-4">
           <p className="flex items-center gap-2 mb-2">
             <MethodBadge method="GET" />
-            <code className="font-mono text-sm">/api/wallet/me</code>
+            <code className="font-mono text-sm">/api/Wallet</code>
           </p>
           <p>Returns current wallet balance.</p>
         </div>
@@ -114,7 +119,7 @@ x-api-key: YOUR_API_KEY`} />
         <div className="mb-4">
           <p className="flex items-center gap-2 mb-2">
             <MethodBadge method="GET" />
-            <code className="font-mono text-sm">/api/wallet/transactions</code>
+            <code className="font-mono text-sm">/api/Wallet/transactions</code>
           </p>
           <p>Returns wallet transaction history. Supports pagination query params.</p>
         </div>
@@ -149,7 +154,7 @@ x-api-key: YOUR_API_KEY`} />
       </DocSection>
 
       <DocSection title="Rate limits & retries">
-        <p>Default: 100 requests per minute per API key. See <Link to="/developers/rate-limits" className="doc-link">Rate limits</Link>.</p>
+        <p>Redis-based distributed rate limiting per endpoint, per second. See <Link to="/developers/rate-limits" className="doc-link">Rate limits</Link>.</p>
         <DocTable
           headers={["Scenario", "Action"]}
           rows={[
