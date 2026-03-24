@@ -4,6 +4,7 @@ import PageHeader from "@/components/docs/PageHeader";
 const glossaryTerms = [
   { term: "API key", definition: "A unique token used to authenticate requests to the Steller API. Sent in the x-api-key header." },
   { term: "Base URL", definition: "The root URL for all API requests. Different for staging and production environments." },
+  { term: "Card number (cardNumber)", definition: "The gift card redemption code returned in the order response when status is Completed. This is the code the end-user redeems." },
   { term: "Face value", definition: "The monetary value of a gift card (e.g. $25, $50)." },
   { term: "Idempotency", definition: "The property that sending the same request multiple times produces the same result. Achieved via referenceId." },
   { term: "Partner-specific pricing", definition: "Pricing that may differ per partner based on contractual agreements." },

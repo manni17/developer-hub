@@ -40,7 +40,7 @@ x-api-key: YOUR_API_KEY`} />
 
       <DocSection title="Order lifecycle">
         <p>
-          <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">POST /api/Orders</code> → poll <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/Orders/:id</code> → Completed or Failed.
+          <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">POST /api/orders</code> → poll <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/orders/:id</code> → Completed or Failed.
         </p>
         <DocTable
           headers={["Status", "Description"]}
@@ -58,12 +58,9 @@ x-api-key: YOUR_API_KEY`} />
           Sending the same referenceId returns the existing order — no double debit.
         </p>
         <CodeBlock language="json" code={`{
-  "items": [
-    {
-      "sku": "MOCK-ITUNES-25",
-      "quantity": 1
-    }
-  ],
+  "sku": "1823256",
+  "faceValue": 1,
+  "quantity": 1,
   "referenceId": "partner-order-001"
 }`} />
         <p className="mt-2 text-muted-foreground text-sm">
@@ -76,52 +73,132 @@ x-api-key: YOUR_API_KEY`} />
         <div className="mb-4">
           <p className="flex items-center gap-2 mb-2">
             <MethodBadge method="GET" />
+            <code className="font-mono text-sm">/api/partner/catalog/orderable</code>
+          </p>
+          <p>Returns only products activated for your partner account — these are the products you can order. Use the <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">sku</code> from each product when placing orders.</p>
+          <CodeBlock language="json" code={`// Response (abbreviated)
+{
+  "brands": [
+    {
+      "name": "Free Fire",
+      "currencyCode": "USD",
+      "countryCode": "US",
+      "products": [
+        {
+          "id": 1823256,
+          "name": "Free Fire 100 +10 Diamonds",
+          "sku": "1823256",
+          "minFaceValue": 1.0,
+          "maxFaceValue": 1.0,
+          "partnerPriceMin": 0.945,
+          "partnerPriceMax": 0.945
+        }
+      ]
+    }
+  ],
+  "count": 1,
+  "totalProducts": 5
+}`} />
+        </div>
+
+        <div className="mb-4">
+          <p className="flex items-center gap-2 mb-2">
+            <MethodBadge method="GET" />
+            <code className="font-mono text-sm">/api/partner/catalog/browse</code>
+          </p>
+          <p>Full catalog with partner pricing — includes all products (activated or not). Use for browsing and marketing; contact Steller to activate products for ordering.</p>
+        </div>
+
+        <div className="mb-4">
+          <p className="flex items-center gap-2 mb-2">
+            <MethodBadge method="GET" />
             <code className="font-mono text-sm">/api/brand/getCatalog</code>
           </p>
-          <p>Returns the partner-specific catalog of available brands and SKUs.</p>
+          <p>Legacy catalog endpoint. Returns your partner-specific catalog. Prefer <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">/api/partner/catalog/orderable</code> for ordering.</p>
         </div>
 
         <h3 className="text-lg font-medium mb-3 mt-8 text-foreground">Transactional</h3>
         <div className="mb-4">
           <p className="flex items-center gap-2 mb-2">
             <MethodBadge method="POST" />
-            <code className="font-mono text-sm">/api/Orders</code>
+            <code className="font-mono text-sm">/api/orders</code>
           </p>
-          <p>Create a new gift card order. Returns 202 with order ID.</p>
+          <p>Create a new gift card order. Returns 202 with order ID. Wallet is debited at creation; refunded on failure.</p>
           <DocTable
             headers={["Field", "Type", "Required", "Description"]}
             rows={[
-              ["items", "array", "Yes", "Array of items to order. Each item must have sku and quantity."],
-              ["items[].sku", "string", "Yes", "SKU from catalog (GET /api/brand/getCatalog)."],
-              ["items[].quantity", "number", "Yes", "Quantity to order."],
+              ["sku", "string", "Yes", "Product SKU from catalog (e.g. from /api/partner/catalog/orderable)."],
+              ["faceValue", "number", "Yes", "Face value per card; must be within product minFaceValue/maxFaceValue."],
+              ["quantity", "number", "Yes", "Number of cards to order."],
               ["referenceId", "string", "Yes", "Your unique order reference (max 100 chars). For retries, use the same referenceId."],
             ]}
           />
+          <CodeBlock language="json" code={`// Request
+{
+  "sku": "1823256",
+  "faceValue": 1,
+  "quantity": 1,
+  "referenceId": "partner-order-001"
+}
+
+// Response (202 Accepted)
+{
+  "id": "024372fe-ab37-4190-8c37-9cf668b528a8",
+  "status": "Processing",
+  "total": 1.0,
+  "saleTotal": 1.2,
+  "createdAt": "2026-03-24T05:38:59Z",
+  "cards": []
+}`} />
         </div>
 
         <div className="mb-4">
           <p className="flex items-center gap-2 mb-2">
             <MethodBadge method="GET" />
-            <code className="font-mono text-sm">/api/Orders/:id</code>
+            <code className="font-mono text-sm">/api/orders/:id</code>
           </p>
-          <p>Poll order status. Returns order details including status and card data when completed.</p>
+          <p>Poll order status. When Completed, the response includes card data (serial, cardNumber, PIN).</p>
+          <CodeBlock language="json" code={`// Response (Completed)
+{
+  "id": "024372fe-ab37-4190-8c37-9cf668b528a8",
+  "status": "Completed",
+  "total": 1.0,
+  "saleTotal": 1.2,
+  "createdAt": "2026-03-24T05:38:59Z",
+  "cards": [
+    {
+      "serial": "b759bb85-f375-4006-...",
+      "pin": "744",
+      "cardNumber": "1ff889b45def4cee...",
+      "expiryDate": "2027-03-24T05:39:01Z"
+    }
+  ]
+}`} />
+          <p className="mt-2 text-muted-foreground text-sm">
+            <strong>cardNumber</strong> is the redemption code (gift card code). <strong>pin</strong> is the PIN if the card requires one. Both are only visible when status is Completed.
+          </p>
         </div>
 
         <h3 className="text-lg font-medium mb-3 mt-8 text-foreground">Financials</h3>
         <div className="mb-4">
           <p className="flex items-center gap-2 mb-2">
             <MethodBadge method="GET" />
-            <code className="font-mono text-sm">/api/Wallet</code>
+            <code className="font-mono text-sm">/api/wallet/me</code>
           </p>
-          <p>Returns current wallet balance.</p>
+          <p>Returns current partner wallet balance.</p>
+          <CodeBlock language="json" code={`// Response
+{
+  "availableBalance": 998.80,
+  "currency": "USD"
+}`} />
         </div>
 
         <div className="mb-4">
           <p className="flex items-center gap-2 mb-2">
             <MethodBadge method="GET" />
-            <code className="font-mono text-sm">/api/Wallet/transactions</code>
+            <code className="font-mono text-sm">/api/wallet/transactions</code>
           </p>
-          <p>Returns wallet transaction history. Supports pagination query params.</p>
+          <p>Returns wallet transaction history (debits, credits, refunds). Supports pagination query params.</p>
         </div>
 
         <h3 className="text-lg font-medium mb-3 mt-8 text-foreground">Webhooks</h3>
@@ -138,6 +215,13 @@ x-api-key: YOUR_API_KEY`} />
             <code className="font-mono text-sm">/api/partner/webhook</code>
           </p>
           <p>Update webhook URL and secret.</p>
+        </div>
+        <div className="mb-4">
+          <p className="flex items-center gap-2 mb-2">
+            <MethodBadge method="GET" />
+            <code className="font-mono text-sm">/api/partner/webhook/events</code>
+          </p>
+          <p>List recent webhook-like order events for catch-up and replay workflows.</p>
         </div>
       </DocSection>
 

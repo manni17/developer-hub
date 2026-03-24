@@ -29,25 +29,37 @@ const GettingStarted = () => {
       </DocSection>
 
       <DocSection title="First call">
-        <h3 className="text-base font-medium mb-2 text-foreground">Get your catalog</h3>
+        <h3 className="text-base font-medium mb-2 text-foreground">Get your orderable catalog</h3>
         <CodeBlock
           language="bash"
-          code={`curl -X GET "${siteConfig.apiBaseUrlStaging}/api/brand/getCatalog" \\
+          code={`curl -X GET "${siteConfig.apiBaseUrlStaging}/api/partner/catalog/orderable" \\
   -H "x-api-key: YOUR_API_KEY"`}
         />
+        <p className="text-sm text-muted-foreground mt-2">
+          Returns only products activated for your account. Use the <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">sku</code> and <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">minFaceValue</code>/<code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">maxFaceValue</code> from the response when placing orders.
+        </p>
         <h3 className="text-base font-medium mb-2 mt-6 text-foreground">Check wallet</h3>
         <CodeBlock
           language="bash"
-          code={`curl -X GET "${siteConfig.apiBaseUrlStaging}/api/Wallet" \\
+          code={`curl -X GET "${siteConfig.apiBaseUrlStaging}/api/wallet/me" \\
   -H "x-api-key: YOUR_API_KEY"`}
         />
       </DocSection>
 
+      <DocSection title="Important rules">
+        <ul>
+          <li><strong>Always send a unique <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">referenceId</code></strong> on <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">POST /api/orders</code> (idempotency). If you retry after a timeout, use the <strong>same</strong> referenceId — no double debit.</li>
+          <li><strong>Poll <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/orders/:id</code></strong> every 2–5 seconds until status is <strong>Completed</strong> or <strong>Failed</strong>. Do not stop polling early.</li>
+          <li><strong>Use only SKUs from your catalog</strong> — call <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">/api/partner/catalog/orderable</code> first.</li>
+          <li><strong>Prepaid wallet</strong> — insufficient balance causes order creation to fail. Failed orders are refunded automatically.</li>
+        </ul>
+      </DocSection>
+
       <DocSection title="Next steps">
         <ol>
-          <li><Link to="/developers/api-reference" className="doc-link">API reference</Link> — full endpoint documentation</li>
+          <li><Link to="/developers/api-reference" className="doc-link">API reference</Link> — full endpoint documentation with request/response examples</li>
           <li><Link to="/developers/postman" className="doc-link">Postman</Link> — test without writing code</li>
-          <li><Link to="/developers/partner-dashboard" className="doc-link">Partner dashboard</Link> — browse catalog and place orders</li>
+          <li><Link to="/developers/partner-dashboard" className="doc-link">Partner dashboard</Link> — browse catalog and place orders via UI</li>
           <li><Link to="/developers/webhooks" className="doc-link">Webhooks</Link> — get notified on order completion</li>
         </ol>
       </DocSection>

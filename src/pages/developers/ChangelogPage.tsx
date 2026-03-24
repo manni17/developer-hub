@@ -3,6 +3,10 @@ import PageHeader from "@/components/docs/PageHeader";
 
 const entries = [
   {
+    date: "2026-03-24",
+    summary: "API: Order response now includes cardNumber (gift card redemption code) alongside serial, pin, and expiryDate. New partner catalog endpoints: GET /api/partner/catalog/orderable (activated products only) and GET /api/partner/catalog/browse (full catalog with partner pricing). Docs: Updated API reference with response examples for all endpoints; added Important rules section to Getting started.",
+  },
+  {
     date: "2026-03-01",
     summary: "Docs: Added webhook verification code samples (Node.js, Python). API: No changes.",
   },
