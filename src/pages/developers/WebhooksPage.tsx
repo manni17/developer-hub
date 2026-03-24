@@ -12,7 +12,7 @@ const WebhooksPage = () => {
 
       <DocSection title="Overview">
         <p>
-          Steller sends webhook notifications when orders complete or fail, and when your wallet balance is low.
+          Steller sends webhook notifications when orders complete or fail.
           Configure your webhook URL and secret via the API or partner dashboard.
         </p>
       </DocSection>
@@ -44,7 +44,6 @@ const WebhooksPage = () => {
           rows={[
             ["order.completed", "Gift card fulfilled successfully"],
             ["order.failed", "Order fulfillment failed; wallet refunded"],
-            ["low_balance", "Wallet balance below threshold"],
           ]}
         />
       </DocSection>
@@ -52,7 +51,7 @@ const WebhooksPage = () => {
       <DocSection title="Signature">
         <p>
           Every webhook request includes an <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">X-Steller-Signature</code> header.
-          This is an HMAC-SHA256 of the raw request body using your <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">webhookSecret</code>.
+          This is a Base64-encoded HMAC-SHA256 of the raw request body using your <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">webhookSecret</code>.
           Always verify the signature before processing.
         </p>
       </DocSection>
@@ -64,10 +63,16 @@ function verifyWebhook(body, signature, secret) {
   const expected = crypto
     .createHmac('sha256', secret)
     .update(body, 'utf8')
-    .digest('hex');
+    .digest('base64');
+
+  // timingSafeEqual requires buffers of equal length
+  const sigBuf = Buffer.from(signature, 'base64');
+  const expBuf = Buffer.from(expected, 'base64');
+  if (sigBuf.length !== expBuf.length) return false;
+
   return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expected)
+    sigBuf,
+    expBuf
   );
 }`} />
       </DocSection>
@@ -81,15 +86,18 @@ def verify_webhook(body: bytes, signature: str, secret: str) -> bool:
         secret.encode(),
         body,
         hashlib.sha256
-    ).hexdigest()
-    return hmac.compare_digest(signature, expected)`} />
+    ).digest()
+    received = base64.b64decode(signature)
+    if len(received) != len(expected):
+        return False
+    return hmac.compare_digest(received, expected)`} />
       </DocSection>
 
       <DocSection title="Retry policy">
         <ul>
-          <li>Up to <strong>5 retries</strong> over ~24 hours with exponential back-off</li>
+          <li>Up to <strong>5 retries</strong> with exponential back-off for failed webhook deliveries</li>
           <li>If you miss a webhook, poll <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/orders/:id</code></li>
-          <li>No replay API is currently available</li>
+          <li>For catch-up, you can list recent events via <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/partner/webhook/events?limit=50</code></li>
         </ul>
       </DocSection>
     </DocsLayout>

@@ -2,6 +2,7 @@ import DocsLayout from "@/components/layout/DocsLayout";
 import PageHeader from "@/components/docs/PageHeader";
 import DocSection from "@/components/docs/DocSection";
 import DocTable from "@/components/docs/DocTable";
+import { siteConfig } from "@/config/site";
 import { Link } from "react-router-dom";
 
 const EnvironmentsPage = () => {
@@ -14,7 +15,7 @@ const EnvironmentsPage = () => {
           headers={["Aspect", "Staging", "Production"]}
           rows={[
             ["Purpose", "Development and testing", "Live operations"],
-            ["Base URL", "Provided at onboarding", "Provided at go-live"],
+            ["Base URL", siteConfig.apiBaseUrlStaging, "Provided at go-live"],
             ["API key", "Staging key", "Production key"],
             ["Vendor", "Sandbox / mock fulfillment", "Live vendor (real gift cards)"],
             ["Wallet", "Test funds", "Real funds"],

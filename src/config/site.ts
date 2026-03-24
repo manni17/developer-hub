@@ -2,6 +2,8 @@ export const siteConfig = {
   name: "Steller",
   signupUrl: "#",
   dashboardUrl: "#",
+  /** Staging API base URL (for self-serve partners from developer hub). Production URL provided at go-live. */
+  apiBaseUrlStaging: "https://api-v2.steler.org",
   statusUrl: "#",
   marketingSiteUrl: "#",
   supportEmail: "support@steller.com",
