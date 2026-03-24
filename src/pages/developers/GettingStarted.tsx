@@ -51,6 +51,7 @@ const GettingStarted = () => {
           <li><strong>Always send a unique <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">referenceId</code></strong> on <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">POST /api/orders</code> (idempotency). If you retry after a timeout, use the <strong>same</strong> referenceId — no double debit.</li>
           <li><strong>Poll <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/orders/:id</code></strong> every 2–5 seconds until status is <strong>Completed</strong> or <strong>Failed</strong>. Do not stop polling early.</li>
           <li><strong>Use only SKUs from your catalog</strong> — call <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">/api/partner/catalog/orderable</code> first.</li>
+          <li><strong>faceValue = card denomination</strong> — for fixed cards, use the denomination confirmed by Steller (e.g. 1 for a $1 card). Note: <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">partnerPriceMin/Max</code> from the catalog is what you pay, not the faceValue you send.</li>
           <li><strong>Prepaid wallet</strong> — insufficient balance causes order creation to fail. Failed orders are refunded automatically.</li>
         </ul>
       </DocSection>

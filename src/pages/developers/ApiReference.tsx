@@ -21,7 +21,7 @@ const ApiReference = () => {
 
       <DocSection title="Authentication">
         <p>Authenticate every request with your API key in the <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">x-api-key</code> header.</p>
-        <CodeBlock language="http" code={`GET /api/brand/getCatalog HTTP/1.1
+        <CodeBlock language="http" code={`GET /api/partner/catalog/orderable HTTP/1.1
 Host: YOUR_BASE_URL
 x-api-key: YOUR_API_KEY`} />
         <p>Store your API key securely. Do not commit it to version control or expose it client-side.</p>
@@ -64,7 +64,7 @@ x-api-key: YOUR_API_KEY`} />
   "referenceId": "partner-order-001"
 }`} />
         <p className="mt-2 text-muted-foreground text-sm">
-          SKU value comes from <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/brand/getCatalog</code> — use the <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">sku</code> field from each product.
+          Get the <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">sku</code> from <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/partner/catalog/orderable</code>. That endpoint returns only products you can order.
         </p>
       </DocSection>
 
@@ -76,11 +76,11 @@ x-api-key: YOUR_API_KEY`} />
             <code className="font-mono text-sm">/api/partner/catalog/orderable</code>
           </p>
           <p>Returns only products activated for your partner account — these are the products you can order. Use the <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">sku</code> from each product when placing orders.</p>
-          <CodeBlock language="json" code={`// Response (abbreviated)
+          <CodeBlock language="json" code={`// Response (abbreviated — real staging data)
 {
   "brands": [
     {
-      "name": "Free Fire",
+      "name": "Garena Free Fire Global",
       "currencyCode": "USD",
       "countryCode": "US",
       "products": [
@@ -88,10 +88,10 @@ x-api-key: YOUR_API_KEY`} />
           "id": 1823256,
           "name": "Free Fire 100 +10 Diamonds",
           "sku": "1823256",
-          "minFaceValue": 1.0,
-          "maxFaceValue": 1.0,
-          "partnerPriceMin": 0.945,
-          "partnerPriceMax": 0.945
+          "minFaceValue": 0.945,
+          "maxFaceValue": 0.945,
+          "partnerPriceMin": 1.2,
+          "partnerPriceMax": 1.2
         }
       ]
     }
@@ -99,6 +99,17 @@ x-api-key: YOUR_API_KEY`} />
   "count": 1,
   "totalProducts": 5
 }`} />
+          <p className="mt-3 text-sm text-muted-foreground">
+            <strong>Key fields:</strong>
+          </p>
+          <ul className="text-sm text-muted-foreground mt-1 space-y-1">
+            <li><strong>sku</strong> — use this in <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">POST /api/orders</code>.</li>
+            <li><strong>minFaceValue / maxFaceValue</strong> — the denomination range from the vendor. For fixed cards, min = max. Use this as <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">faceValue</code> in your order unless Steller confirms a different denomination (see note below).</li>
+            <li><strong>partnerPriceMin / partnerPriceMax</strong> — the price debited from your wallet per card. This is <em>not</em> the face value; it is what you pay Steller.</li>
+          </ul>
+          <p className="mt-2 p-3 rounded-md bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 text-sm">
+            <strong>Denomination vs. price:</strong> For some cards, <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">minFaceValue</code> may show the vendor cost (e.g. 0.945) rather than the face denomination (e.g. 1.00). When in doubt, confirm the correct <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">faceValue</code> with Steller for your activated products. The test pair in your onboarding materials will show the exact value to use.
+          </p>
         </div>
 
         <div className="mb-4">
@@ -127,13 +138,13 @@ x-api-key: YOUR_API_KEY`} />
           <DocTable
             headers={["Field", "Type", "Required", "Description"]}
             rows={[
-              ["sku", "string", "Yes", "Product SKU from catalog (e.g. from /api/partner/catalog/orderable)."],
-              ["faceValue", "number", "Yes", "Face value per card; must be within product minFaceValue/maxFaceValue."],
+              ["sku", "string", "Yes", "Product SKU from /api/partner/catalog/orderable."],
+              ["faceValue", "number", "Yes", "Card denomination. For fixed cards, use the denomination confirmed by Steller or shown in minFaceValue/maxFaceValue. For variable cards, any value within the min/max range."],
               ["quantity", "number", "Yes", "Number of cards to order."],
               ["referenceId", "string", "Yes", "Your unique order reference (max 100 chars). For retries, use the same referenceId."],
             ]}
           />
-          <CodeBlock language="json" code={`// Request
+          <CodeBlock language="json" code={`// Request — use sku from orderable catalog; faceValue = card denomination
 {
   "sku": "1823256",
   "faceValue": 1,
@@ -141,7 +152,7 @@ x-api-key: YOUR_API_KEY`} />
   "referenceId": "partner-order-001"
 }
 
-// Response (202 Accepted)
+// Response (202 Accepted) — wallet debited by saleTotal (partner price), not faceValue
 {
   "id": "024372fe-ab37-4190-8c37-9cf668b528a8",
   "status": "Processing",
@@ -150,6 +161,9 @@ x-api-key: YOUR_API_KEY`} />
   "createdAt": "2026-03-24T05:38:59Z",
   "cards": []
 }`} />
+          <p className="mt-2 text-sm text-muted-foreground">
+            <strong>total</strong> is the card denomination. <strong>saleTotal</strong> is your wallet debit (partner price). They will differ based on your pricing agreement.
+          </p>
         </div>
 
         <div className="mb-4">
