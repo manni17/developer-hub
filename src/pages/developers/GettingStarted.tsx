@@ -26,6 +26,16 @@ const GettingStarted = () => {
           <li><strong>Staging:</strong> <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">{siteConfig.apiBaseUrlStaging}</code> — use this for integration testing and signup flows.</li>
           <li><strong>Production:</strong> URL provided by Steller at go-live.</li>
         </ul>
+        <p className="text-sm text-muted-foreground mt-2">
+          API keys are environment-scoped. A key label like <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">stlr_live_...</code> does not by itself confirm which host to use.
+          Always use the base URL paired with that key by Steller.
+        </p>
+        <CodeBlock
+          language="text"
+          code={`Environment mapping (source of truth)
+- Staging key + staging host -> ${siteConfig.apiBaseUrlStaging}
+- Production key + production host -> URL provided by Steller at go-live`}
+        />
       </DocSection>
 
       <DocSection title="First call">

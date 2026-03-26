@@ -35,6 +35,10 @@ const WebhooksPage = () => {
   "webhookUrl": "https://your-server.com/webhooks/steller",
   "webhookSecret": "your-strong-secret"
 }`} />
+          <p className="text-sm text-muted-foreground mt-2">
+            Use the exact request field name <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">webhookSecret</code>.
+            The alias <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">secret</code> is not accepted.
+          </p>
         </div>
       </DocSection>
 
@@ -98,6 +102,15 @@ def verify_webhook(body: bytes, signature: str, secret: str) -> bool:
           <li>Up to <strong>5 retries</strong> with exponential back-off for failed webhook deliveries</li>
           <li>If you miss a webhook, poll <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/orders/:id</code></li>
           <li>For catch-up, you can list recent events via <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/partner/webhook/events?limit=50</code></li>
+        </ul>
+      </DocSection>
+
+      <DocSection title="Delivery troubleshooting">
+        <ul>
+          <li><strong>Step 1: Confirm Steller event generation</strong> — Check <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/partner/webhook/events</code>. If your order event is present there, Steller created the event.</li>
+          <li><strong>Step 2: Confirm external delivery</strong> — Verify your endpoint logs show an incoming HTTP POST and a 2xx response. Event presence alone does not prove your receiver got it.</li>
+          <li><strong>If events exist but no callback reached your server</strong> — verify your webhook URL is publicly reachable, TLS is valid, your firewall/CDN allows Steller source traffic, and your handler returns 2xx quickly.</li>
+          <li><strong>If callback arrived but verification failed</strong> — use the raw request body for HMAC validation and the exact <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">webhookSecret</code> value configured in Steller.</li>
         </ul>
       </DocSection>
     </DocsLayout>

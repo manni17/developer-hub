@@ -14,7 +14,7 @@ const RateLimits = () => {
           headers={["Endpoint", "Limit", "Window"]}
           rows={[
             ["GET /api/brand/getCatalog", "50 requests", "per second"],
-            ["POST /api/Orders", "10 requests", "per second"],
+            ["POST /api/orders", "10 requests", "per second"],
             ["Other endpoints", "30 requests", "per second"],
           ]}
         />
