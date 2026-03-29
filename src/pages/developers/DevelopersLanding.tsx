@@ -18,6 +18,11 @@ const DevelopersLanding = () => {
             <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
               API, partner dashboard, and Postman — everything you need to launch digital gift cards.
             </p>
+            <p className="text-sm text-muted-foreground mb-6 max-w-xl mx-auto">
+              <Link to="/developers/getting-started" className="doc-link font-medium">
+                First API success in under a minute →
+              </Link>
+            </p>
             <a
               href={siteConfig.signupUrl}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-accent-foreground font-medium hover:opacity-90 transition-opacity shadow-sm"
