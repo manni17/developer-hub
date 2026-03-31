@@ -30,6 +30,14 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
           <Link to="/developers" className="text-muted-foreground hover:text-foreground transition-colors">
             Docs
           </Link>
+          <a
+            href="https://muhanad.steler.org"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Blog
+          </a>
           <Link to="/developers/support" className="text-muted-foreground hover:text-foreground transition-colors">
             Support
           </Link>

@@ -1,3 +1,11 @@
+# developer-hub
+
+Developer docs frontend (Vite + React). Public site: **https://developers.steler.org**.
+
+Essays and reflections live in a **separate** repository: [github.com/manni17/blog](https://github.com/manni17/blog) (deployed as `steller-blog` / **https://muhanad.steler.org**).
+
+---
+
 # Welcome to your Lovable project
 
 ## Project info
