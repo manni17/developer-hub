@@ -13,9 +13,8 @@ const RateLimits = () => {
         <DocTable
           headers={["Endpoint", "Limit", "Window"]}
           rows={[
-            ["GET /api/brand/getCatalog", "50 requests", "per second"],
-            ["POST /api/orders", "10 requests", "per second"],
-            ["Other endpoints", "30 requests", "per second"],
+            ["POST /api/orders", "10 requests", "per partner per second"],
+            ["Other partner endpoints", "No separate published cap", "Avoid sustained bursts"],
           ]}
         />
         <p>

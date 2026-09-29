@@ -3,6 +3,11 @@ import PageHeader from "@/components/docs/PageHeader";
 
 const entries = [
   {
+    date: "2026-09-26",
+    summary:
+      "Docs: Getting started now uses catalog-driven first order (no hard-coded SKU); documents response envelope (data.*), 202 vs 200 idempotency, and price.min vs faceValue. API reference examples aligned with live orderable catalog shape. Rate limits corrected for POST /api/orders.",
+  },
+  {
     date: "2026-03-24",
     summary: "API: Order response now includes cardNumber (gift card redemption code) alongside serial, pin, and expiryDate. New partner catalog endpoints: GET /api/partner/catalog/orderable (activated products only) and GET /api/partner/catalog/browse (full catalog with partner pricing). Docs: Updated API reference with response examples for all endpoints; added Important rules section to Getting started.",
   },
