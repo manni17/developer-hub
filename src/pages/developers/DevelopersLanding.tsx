@@ -16,13 +16,13 @@ const DevelopersLanding = () => {
               Integrate with Steller
             </h1>
             <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-              API, partner dashboard, and Postman — everything you need to launch digital gift cards.
+              API, partner dashboard, and Postman — wallet, catalog, and your first accepted order (202) in under a minute when your account is set up.
             </p>
             <Link
               to="/developers/getting-started"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-accent-foreground font-medium hover:opacity-90 transition-opacity shadow-sm"
             >
-              Start in under a minute
+              Get to first value
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
