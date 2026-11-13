@@ -23,7 +23,7 @@ const StatusPage = () => {
           {services.map((svc) => (
             <div key={svc.name} className="flex items-center justify-between py-2 border-b last:border-b-0">
               <span className="text-foreground">{svc.name}</span>
-              <span className="text-sm text-accent font-medium">{svc.status}</span>
+              <span className="text-sm text-foreground font-medium">{svc.status}</span>
             </div>
           ))}
         </div>

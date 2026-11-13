@@ -42,7 +42,7 @@ const ChangelogPage = () => {
       <div className="space-y-6">
         {entries.map((entry) => (
           <div key={entry.date} className="pb-6 border-b last:border-b-0">
-            <time className="text-sm font-mono text-accent font-medium">{entry.date}</time>
+            <time className="text-sm font-mono text-muted-foreground font-medium">{entry.date}</time>
             <p className="text-muted-foreground mt-1">{entry.summary}</p>
           </div>
         ))}

@@ -15,9 +15,24 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+        heading: ["Plus Jakarta Sans", "Inter", "system-ui", "-apple-system", "sans-serif"],
         mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       colors: {
+        /* Steller brand palette (tailwind-theme.js from the brand kit). Teal is decoration/fill only, never small text on light. */
+        steller: {
+          teal: "#06B8BD",
+          peach: "#F09759",
+          sand: "#F2C28E",
+          magenta: "#D66A9D",
+          blue: "#4277B6",
+          ink: "#1A1C1E",
+          slate: "#5C6066",
+          paper: "#F4F3F0",
+          "teal-shade": "#059397",
+          "blue-tint": "#608DC2",
+          mist: "#E7E5E1",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

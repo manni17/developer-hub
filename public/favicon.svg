@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200.776 198.937" width="200.776" height="198.937" fill="none" role="img" aria-label="Steller mark">
+  <title>Steller mark</title>
+  <path d="M 8.000,126.068 L 100.388,164.337 L 100.388,190.937 L 9.811,153.418 A 1.960 1.960 0 0 1 8.000,150.708 Z" fill="#4277B6" stroke="#4277B6" stroke-width="0.35" stroke-linejoin="round" />
+  <path d="M 192.776,126.068 L 100.388,164.337 L 100.388,190.937 L 190.965,153.418 A 1.960 1.960 0 0 0 192.776,150.708 Z" fill="#608DC2" stroke="#608DC2" stroke-width="0.35" stroke-linejoin="round" />
+  <path d="M 8.000,99.468 L 100.388,137.737 L 100.388,164.337 L 9.811,126.818 A 1.960 1.960 0 0 1 8.000,124.108 Z" fill="#D66A9D" stroke="#D66A9D" stroke-width="0.35" stroke-linejoin="round" />
+  <path d="M 192.776,99.468 L 100.388,137.737 L 100.388,164.337 L 190.965,126.818 A 1.960 1.960 0 0 0 192.776,124.108 Z" fill="#D66A9D" stroke="#D66A9D" stroke-width="0.35" stroke-linejoin="round" />
+  <path d="M 8.000,72.868 L 100.388,111.137 L 100.388,137.737 L 9.811,100.218 A 1.960 1.960 0 0 1 8.000,97.508 Z" fill="#F09759" stroke="#F09759" stroke-width="0.35" stroke-linejoin="round" />
+  <path d="M 192.776,72.868 L 100.388,111.137 L 100.388,137.737 L 190.965,100.218 A 1.960 1.960 0 0 0 192.776,97.508 Z" fill="#F2C28E" stroke="#F2C28E" stroke-width="0.35" stroke-linejoin="round" />
+  <path d="M 8.000,46.268 L 100.388,84.537 L 100.388,111.137 L 9.811,73.618 A 1.960 1.960 0 0 1 8.000,70.908 Z" fill="#059397" stroke="#059397" stroke-width="0.35" stroke-linejoin="round" />
+  <path d="M 192.776,46.268 L 100.388,84.537 L 100.388,111.137 L 190.965,73.618 A 1.960 1.960 0 0 0 192.776,70.908 Z" fill="#06B8BD" stroke="#06B8BD" stroke-width="0.35" stroke-linejoin="round" />
+  <path d="M 100.388,8.000 L 192.776,46.268 L 100.388,84.537 L 8.000,46.268 Z" fill="#06B8BD" />
+</svg>
