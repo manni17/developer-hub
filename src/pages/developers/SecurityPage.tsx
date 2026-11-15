@@ -11,8 +11,9 @@ const SecurityPage = () => {
       <DocSection title="API key">
         <ul>
           <li>Store your API key securely (environment variables, secrets manager)</li>
-          <li>One API key per partner — do not share between environments</li>
+          <li>Use a separate API key for each environment. During key rotation two keys work briefly.</li>
           <li>Send only in the <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">x-api-key</code> header, never in URLs or client-side code</li>
+          <li>If a key may have been exposed, contact Steller to rotate it</li>
         </ul>
       </DocSection>
 
@@ -24,12 +25,12 @@ const SecurityPage = () => {
       </DocSection>
 
       <DocSection title="HTTPS">
-        <p>All production traffic must use HTTPS. Staging may use HTTP for local development only.</p>
+        <p>All traffic, including staging, must use HTTPS.</p>
       </DocSection>
 
       <DocSection title="Webhook secret">
         <p>
-          Use a strong, random secret for webhook signature verification.
+          Use a strong, random secret for webhook signature verification, and use an https:// webhook URL.
           See <Link to="/developers/webhooks" className="doc-link">Webhooks</Link> for verification code samples.
         </p>
       </DocSection>

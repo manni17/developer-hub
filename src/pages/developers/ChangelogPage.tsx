@@ -22,11 +22,7 @@ const entries = [
   },
   {
     date: "2026-02-25",
-    summary: "Docs: Initial developer documentation site launch. API: v1 stable release.",
-  },
-  {
-    date: "2026-02-15",
-    summary: "API: Added low_balance webhook event. Docs: Updated webhooks page.",
+    summary: "Docs: Initial developer documentation site launch.",
   },
   {
     date: "2026-02-01",

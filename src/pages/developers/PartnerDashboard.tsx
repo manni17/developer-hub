@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 const PartnerDashboard = () => {
   return (
     <DocsLayout>
-      <PageHeader title="Partner dashboard" description="Web app for catalog, orders, wallet, and webhook config." />
+      <PageHeader title="Partner dashboard" description="Web app to review catalog, orders, wallet, and webhook settings." />
 
       <DocSection title="What is the Partner dashboard?">
         <p>
@@ -22,7 +22,8 @@ const PartnerDashboard = () => {
           headers={["Use case", "Recommended"]}
           rows={[
             ["Automated order flow", "API"],
-            ["Ad-hoc order, balance check, webhook config", "Dashboard or API"],
+            ["Place orders", "API only (a dashboard login cannot place orders)"],
+            ["Balance check, webhook config", "Dashboard or API"],
             ["View order history in browser", "Dashboard"],
           ]}
         />
@@ -32,7 +33,7 @@ const PartnerDashboard = () => {
         <ul>
           <li>Navigate to the dashboard URL provided by Steller</li>
           <li>Enter your email and password</li>
-          <li>Use "Forgot password?" if you need to reset</li>
+          <li>If you cannot sign in, contact Steller</li>
         </ul>
         <p className="mt-2 text-sm">Note: Your dashboard password is separate from your API key. Do not send your password via the API.</p>
       </DocSection>
@@ -40,8 +41,7 @@ const PartnerDashboard = () => {
       <DocSection title="What you can do after login">
         <ul>
           <li><strong>Catalog</strong> — browse available brands and SKUs</li>
-          <li><strong>Orders</strong> — review orders placed with the API key</li>
-          <li><strong>Order report</strong> — view and search order history</li>
+          <li><strong>Orders</strong> — review and search orders placed with the API key</li>
           <li><strong>Wallet</strong> — check balance and transaction history</li>
           <li><strong>Webhook</strong> — configure webhook URL and secret</li>
         </ul>

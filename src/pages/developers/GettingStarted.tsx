@@ -28,7 +28,7 @@ if [ -z "$SKU" ] || [ "$SKU" = "null" ]; then
   echo "No activated products in orderable catalog. Contact Steller to activate SKUs and fund your wallet."
   exit 1
 fi
-REF="partner-test-$(date +%s)"
+REF="$(uuidgen)"
 ORDER=$(curl -sS -w "\\nHTTP:%{http_code}" -X POST "${effectiveBase}/api/orders" \\
   -H "x-api-key: ${effectiveKey}" \\
   -H "Content-Type: application/json" \\
@@ -43,15 +43,12 @@ echo "Success: order accepted (202). Poll: GET /api/orders/$ORDER_ID"`;
   const pollCurl = `ORDER_ID="PASTE_ID_FROM_CREATE_RESPONSE"
 curl -sS -H "x-api-key: ${effectiveKey}" "${effectiveBase}/api/orders/$ORDER_ID" | jq .`;
 
-  const manualOrderCurl = `curl -sS -X POST "${effectiveBase}/api/orders" \\
+  const manualOrderCurl = `SKU="SKU_FROM_CATALOG"
+FACE=FACE_VALUE_FROM_CATALOG
+curl -sS -X POST "${effectiveBase}/api/orders" \\
   -H "x-api-key: ${effectiveKey}" \\
   -H "Content-Type: application/json" \\
-  -d '{
-    "sku": "1823257",
-    "faceValue": 2,
-    "quantity": 1,
-    "referenceId": "partner-test-UNIQUE"
-  }'`;
+  -d "{\\"sku\\":\\"$SKU\\",\\"faceValue\\":$FACE,\\"quantity\\":1,\\"referenceId\\":\\"$(uuidgen)\\"}"`;
 
   return (
     <DocsLayout>
@@ -60,7 +57,7 @@ curl -sS -H "x-api-key: ${effectiveKey}" "${effectiveBase}/api/orders/$ORDER_ID"
       <DocSection title="Prerequisites">
         <ul>
           <li>An <strong>API key</strong> issued by Steller with your account. Orders do not use a dashboard token.</li>
-          <li>Staging base URL: <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">{siteConfig.apiBaseUrlStaging}</code></li>
+          <li>Base URL: <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">{siteConfig.apiBaseUrlStaging}</code>. Use the base URL Steller gave you with your key.</li>
           <li>A <strong>funded wallet</strong> and at least one <strong>activated SKU</strong> on your partner account</li>
         </ul>
       </DocSection>
@@ -69,22 +66,11 @@ curl -sS -H "x-api-key: ${effectiveKey}" "${effectiveBase}/api/orders/$ORDER_ID"
         <p>
           The order call is <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">POST /api/orders</code> with the header{" "}
           <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">x-api-key</code> only. The body is sku, faceValue, quantity, and referenceId.
-          The create call returns the order id. It does not return the card. A different path, a request id, a product list, or a dashboard token is not this call.
+          The create call returns the order id. It does not return the card.
         </p>
-        <DocTable
-          headers={["Name on some requirements pages", "The order call"]}
-          rows={[
-            ["POST /api/Order", "POST /api/orders"],
-            ["Dashboard token or JWT", "Header x-api-key"],
-            ["requestId", "referenceId, a UUID you generate"],
-            ["Products list", "One sku, one faceValue, one quantity"],
-            ["Cards in the create response", "Cards on GET /api/orders/{orderId} when status is Completed"],
-            ["GET /api/brand/getCatalog", "GET /api/partner/catalog/orderable"],
-          ]}
-        />
         <p>
-          The first order is quantity 1, sku <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">1823257</code>, face value 2, and a referenceId you generate.
-          Confirm that sku on the orderable catalog before you send it.
+          referenceId is your unique id per purchase. A UUID is recommended.
+          The first order is quantity 1, a sku and face value (minFaceValue) from your orderable catalog, and a referenceId you generate.
         </p>
       </DocSection>
 
@@ -94,16 +80,16 @@ curl -sS -H "x-api-key: ${effectiveKey}" "${effectiveBase}/api/orders/$ORDER_ID"
           rows={[
             ["HTTP 202", "The order is queued. Poll the order id. The wallet is debited for the sale total."],
             ["HTTP 200", "The same order. No second debit. Keep polling that order."],
-            ["HTTP 409", "That referenceId belongs to a different purchase. Use a new UUID."],
+            ["HTTP 409", "That referenceId belongs to a different purchase. Use a new referenceId."],
             ["HTTP 429", "Wait for Retry-After, then send the same body. A 429 is not a 409."],
-            ["Still Processing after about 10 minutes", "Contact Steller with the order id and referenceId. That wait is not a refund."],
+            ["Still Processing for a long time", "Contact Steller with the order id and referenceId. A long wait is not a refund."],
           ]}
         />
       </DocSection>
 
       <DocSection title="Base URL">
         <ul>
-          <li><strong>Staging:</strong> <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">{siteConfig.apiBaseUrlStaging}</code></li>
+          <li><strong>Example base URL:</strong> <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">{siteConfig.apiBaseUrlStaging}</code> (Steller confirms the base URL for each environment when it issues your key)</li>
           <li><strong>Production:</strong> URL provided by Steller at go-live.</li>
         </ul>
         <p className="text-sm text-muted-foreground mt-2">
@@ -171,7 +157,7 @@ curl -sS -H "x-api-key: ${effectiveKey}" "${effectiveBase}/api/orders/$ORDER_ID"
 
         <h3 className="text-base font-medium mb-2 mt-6 text-foreground">3. Place the first order</h3>
         <p className="text-sm text-muted-foreground mb-2">
-          Quantity 1, sku 1823257, face value 2, and a new referenceId. Expect HTTP 202.
+          Quantity 1, the sku and minFaceValue from step 2, and a new referenceId. Replace the two placeholders first. Expect HTTP 202.
         </p>
         <CodeBlock language="bash" code={manualOrderCurl} />
 
@@ -181,9 +167,9 @@ curl -sS -H "x-api-key: ${effectiveKey}" "${effectiveBase}/api/orders/$ORDER_ID"
         </p>
         <CodeBlock language="bash" code={ttvScript} />
 
-        <h3 className="text-base font-medium mb-2 mt-6 text-foreground">4. Poll until Completed or Failed</h3>
+        <h3 className="text-base font-medium mb-2 mt-6 text-foreground">4. Poll until Completed, Failed or Cancelled</h3>
         <p className="text-sm text-muted-foreground mb-2">
-          Use <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">data.id</code> from the create response. Poll every 2–5 seconds. If status is still Processing after about 10 minutes, contact Steller with the order id and referenceId. That wait is not a refund.
+          Use <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">data.id</code> from the create response. Poll every 5 seconds or slower. If status stays Processing for a long time, contact Steller with the order id and referenceId. A long wait is not a refund.
         </p>
         <CodeBlock language="bash" code={pollCurl} />
       </DocSection>
@@ -202,18 +188,18 @@ curl -sS -H "x-api-key: ${effectiveKey}" "${effectiveBase}/api/orders/$ORDER_ID"
             <strong>Idempotency:</strong> a new referenceId returns <strong>202</strong>. The same body again returns <strong>200</strong> and the same order. The same referenceId with a different sku, face value, or quantity returns <strong>409</strong>.
           </li>
           <li>
-            <strong>Rate limit:</strong> 1 order per second, burst 2. A faster call returns <strong>429</strong>. Wait, then retry the same body.
+            <strong>Rate limit:</strong> 1 order per second, burst 2. A faster call returns <strong>429</strong>. Wait, then retry the same body. All calls share 100 requests per minute per API key, so poll no faster than every 5 seconds or use webhooks.
           </li>
           <li>
             <strong>Poll</strong> <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/orders/:id</code> until{" "}
-            <strong>Completed</strong> or <strong>Failed</strong>.
+            <strong>Completed</strong>, <strong>Failed</strong> or <strong>Cancelled</strong>.
           </li>
           <li>
             <strong>Only orderable SKUs</strong> — from <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">/api/partner/catalog/orderable</code>, not the full browse catalog.
           </li>
           <li>
-            <strong>faceValue</strong> comes from <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">minFaceValue</code> /{" "}
-            <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">maxFaceValue</code>.{" "}
+            <strong>faceValue:</strong> for fixed-value SKUs (<code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">minFaceValue</code> equals{" "}
+            <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">maxFaceValue</code>) send that value. Variable-value SKUs cannot be ordered yet.{" "}
             <strong>price.min</strong> / <strong>price.max</strong> in the catalog is your wallet debit (partner price), not the{" "}
             <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">faceValue</code> you send.
           </li>
@@ -233,7 +219,7 @@ curl -sS -H "x-api-key: ${effectiveKey}" "${effectiveBase}/api/orders/$ORDER_ID"
       </DocSection>
 
       <DocSection title="Need an API key?">
-        <p>Steller creates the account, activates products, funds the wallet, and sends the API key in private. The <Link to="/developers/postman" className="doc-link">Postman collection</Link> runs the first order after you paste that key.</p>
+        <p>Steller creates the account, activates products, funds the wallet, and sends the API key in private. <a href={siteConfig.signupUrl} className="doc-link">Request access</a>. The <Link to="/developers/postman" className="doc-link">Postman collection</Link> runs the first order after you paste that key.</p>
       </DocSection>
     </DocsLayout>
   );

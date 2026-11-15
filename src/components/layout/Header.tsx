@@ -51,7 +51,7 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
             href={siteConfig.signupUrl}
             className="text-sm px-4 py-1.5 rounded-md bg-accent text-accent-foreground hover:opacity-90 transition-opacity font-medium"
           >
-            Get API key
+            Request access
           </a>
         </div>
       </div>

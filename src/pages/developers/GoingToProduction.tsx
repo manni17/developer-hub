@@ -15,6 +15,7 @@ const GoingToProduction = () => {
           <li>Contact Steller to request production credentials</li>
           <li>Get your production base URL and API key from Steller</li>
           <li>Update your integration config — replace staging base URL and API key with production values</li>
+          <li>Configure and test your webhook (URL and secret) for production</li>
           <li>Place one small test order on production to confirm everything works</li>
           <li>Contact <Link to="/developers/support" className="doc-link">support</Link> if anything is unclear — include your <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">correlationId</code>, <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">orderId</code>, and timestamp</li>
         </ol>
@@ -26,7 +27,7 @@ const GoingToProduction = () => {
           rows={[
             ["Base URL", "New production URL"],
             ["API key", "New production key"],
-            ["Vendor", "Live fulfillment (real gift cards)"],
+            ["Fulfilment", "Live (real gift cards)"],
             ["Wallet", "Real funds"],
             ["Catalog", "Production catalog (may differ from staging)"],
           ]}

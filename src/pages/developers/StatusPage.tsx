@@ -1,32 +1,20 @@
 import DocsLayout from "@/components/layout/DocsLayout";
 import PageHeader from "@/components/docs/PageHeader";
-import { CheckCircle } from "lucide-react";
+import CTAButton from "@/components/docs/CTAButton";
+import { siteConfig } from "@/config/site";
 
 const StatusPage = () => {
-  const services = [
-    { name: "API", status: "Operational" },
-    { name: "Partner Dashboard", status: "Operational" },
-    { name: "Webhooks", status: "Operational" },
-  ];
-
   return (
     <DocsLayout>
-      <PageHeader title="Status" description="Current operational status of Steller services." />
+      <PageHeader title="Status" description="How to check the health of Steller services." />
 
-      <div className="rounded-lg border p-6 bg-card">
-        <div className="flex items-center gap-2 mb-6">
-          <CheckCircle className="h-5 w-5 text-accent" />
-          <span className="font-semibold text-foreground">All systems operational</span>
-        </div>
-
-        <div className="space-y-3">
-          {services.map((svc) => (
-            <div key={svc.name} className="flex items-center justify-between py-2 border-b last:border-b-0">
-              <span className="text-foreground">{svc.name}</span>
-              <span className="text-sm text-foreground font-medium">{svc.status}</span>
-            </div>
-          ))}
-        </div>
+      <div className="rounded-lg border p-6 bg-card space-y-4">
+        <p className="font-semibold text-foreground">Live status is not published yet.</p>
+        <p className="text-muted-foreground">
+          This page does not show real-time data. If you see errors or delays, or want to ask about an incident,
+          contact support and include the correlationId from the error response.
+        </p>
+        <CTAButton href={`mailto:${siteConfig.supportEmail}?subject=Steller%20service%20status`}>Contact support</CTAButton>
       </div>
     </DocsLayout>
   );
