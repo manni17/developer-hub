@@ -25,9 +25,12 @@ const ErrorReference = () => {
         <DocTable
           headers={["HTTP", "errorCode", "Meaning", "What to do"]}
           rows={[
-            ["400", "(varies)", "Invalid request", "Wrong sku (use SKU from catalog), faceValue out of range, insufficient wallet balance, or referenceId already used for a different order."],
-            ["401", "API_KEY_MISSING", "API key not provided", "Include X-Api-Key (or x-api-key) header on every request."],
-            ["403", "API_KEY_INVALID", "API key invalid or revoked", "Check the key and contact Steller if the issue persists."],
+            ["400", "REFERENCE_ID_REQUIRED", "referenceId was omitted", "Send a new UUID on a new purchase."],
+            ["400", "(varies)", "Invalid request", "Unknown sku, face value is not the fixed denomination, or the balance is too low. Nothing was debited."],
+            ["401", "API_KEY_MISSING", "API key not provided", "Send the x-api-key header on every request."],
+            ["403", "API_KEY_REQUIRED", "A dashboard token was sent", "Order calls use the API key only."],
+            ["403", "API_KEY_INVALID", "API key invalid or revoked", "Ask Steller, in private, to reissue the key."],
+            ["409", "IDEMPOTENCY_CONFLICT", "referenceId was reused with a different sku, face value, or quantity", "Keep this referenceId for the original order. Use a new one for a different purchase."],
             ["404", "NOT_FOUND", "Resource does not exist", "Verify ID or endpoint path"],
             ["429", "(varies)", "Rate limit exceeded", "Read Retry-After header. Retry with same referenceId."],
             ["500", "(varies)", "Unexpected server error", "Note the correlationId from the response and include it when contacting support."],
@@ -39,9 +42,11 @@ const ErrorReference = () => {
         <DocTable
           headers={["HTTP", "Typical cause"]}
           rows={[
-            ["400", "Invalid sku (use catalog), faceValue out of range, insufficient balance, or referenceId conflict"],
-            ["401", "Missing API key header"],
-            ["403", "API key invalid or inactive"],
+            ["202", "Accepted and queued. Poll until Completed or Failed."],
+            ["200", "The same referenceId and the same order. No second debit."],
+            ["400", "Missing referenceId, unknown sku, wrong face value, or insufficient balance. No order was created."],
+            ["409", "Same referenceId, different order. No second debit."],
+            ["429", "Order rate limit. Wait for Retry-After, then send the same body."],
           ]}
         />
       </DocSection>

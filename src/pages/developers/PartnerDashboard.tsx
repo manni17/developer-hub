@@ -13,8 +13,7 @@ const PartnerDashboard = () => {
 
       <DocSection title="What is the Partner dashboard?">
         <p>
-          The Partner dashboard is a web application where you can browse the catalog, place ad-hoc orders,
-          view order history, check your wallet balance, and configure webhook settings — all without writing code.
+          The partner dashboard is a separate login for reviewing the account. An order from your system is POST /api/orders with the API key. The dashboard login is not that call.
         </p>
       </DocSection>
 
@@ -41,7 +40,7 @@ const PartnerDashboard = () => {
       <DocSection title="What you can do after login">
         <ul>
           <li><strong>Catalog</strong> — browse available brands and SKUs</li>
-          <li><strong>Place order</strong> — create ad-hoc gift card orders</li>
+          <li><strong>Orders</strong> — review orders placed with the API key</li>
           <li><strong>Order report</strong> — view and search order history</li>
           <li><strong>Wallet</strong> — check balance and transaction history</li>
           <li><strong>Webhook</strong> — configure webhook URL and secret</li>

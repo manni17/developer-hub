@@ -16,7 +16,7 @@ const DevelopersLanding = () => {
               Integrate with Steller
             </h1>
             <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-              API, partner dashboard, and Postman — everything you need to launch digital gift cards.
+              The order call is POST /api/orders with your API key. Wallet, catalog, and the first accepted order (202) once your account is set up.
             </p>
             <Link
               to="/developers/getting-started"

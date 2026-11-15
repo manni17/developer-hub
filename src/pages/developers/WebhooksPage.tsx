@@ -99,8 +99,8 @@ def verify_webhook(body: bytes, signature: str, secret: str) -> bool:
 
       <DocSection title="Retry policy">
         <ul>
-          <li>Up to <strong>5 retries</strong> with exponential back-off for failed webhook deliveries</li>
-          <li>If you miss a webhook, poll <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/orders/:id</code></li>
+          <li>Steller attempts delivery once and retries up to five more times if your server does not accept it.</li>
+          <li>Polling <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/orders/:id</code> is how you know the order is finished. A webhook is an extra notice.</li>
           <li>For catch-up, you can list recent events via <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/partner/webhook/events?limit=50</code></li>
         </ul>
       </DocSection>

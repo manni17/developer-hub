@@ -13,19 +13,13 @@ const RateLimits = () => {
         <DocTable
           headers={["Endpoint", "Limit", "Window"]}
           rows={[
-            ["GET /api/brand/getCatalog", "50 requests", "per second"],
-            ["POST /api/orders", "10 requests", "per second"],
-            ["Other endpoints", "30 requests", "per second"],
+            ["POST /api/orders", "1 sustained, burst 2", "per partner, per second, no queue"],
+            ["Any partner route", "100 requests", "per API key per minute"],
           ]}
         />
         <p>
-          If you exceed the limit, you'll receive a <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">429 Too Many Requests</code> response 
-          with a <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">Retry-After</code> header. For order retries, use the same <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">referenceId</code>.
+          A third order post in the same second returns HTTP 429 with Retry-After. Wait, then send the same body. Order calls do not use a dashboard login.
         </p>
-      </DocSection>
-
-      <DocSection title="Auth endpoints">
-        <p>Authentication endpoints (<code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">/api/auth</code>) have stricter limits (10 req/s production, 500 req/s development) for DDoS protection.</p>
       </DocSection>
 
       <DocSection title="Vendor limits">
