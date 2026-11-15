@@ -3,6 +3,16 @@ import PageHeader from "@/components/docs/PageHeader";
 
 const entries = [
   {
+    date: "2026-10-25",
+    summary:
+      "Partner contract aligned to the tested staging API: API key only, referenceId required, create 202, identical retry 200, changed body 409, order limit 1/sec burst 2 (429). The Postman collection runs that path. Polling remains how you know an order is finished.",
+  },
+  {
+    date: "2026-09-26",
+    summary:
+      "Docs: Getting started now uses catalog-driven first order (no hard-coded SKU); documents response envelope (data.*), 202 vs 200 idempotency, and price.min vs faceValue. API reference examples aligned with live orderable catalog shape. Rate limits corrected for POST /api/orders.",
+  },
+  {
     date: "2026-03-24",
     summary: "API: Order response now includes cardNumber (gift card redemption code) alongside serial, pin, and expiryDate. New partner catalog endpoints: GET /api/partner/catalog/orderable (activated products only) and GET /api/partner/catalog/browse (full catalog with partner pricing). Docs: Updated API reference with response examples for all endpoints; added Important rules section to Getting started.",
   },
@@ -12,11 +22,7 @@ const entries = [
   },
   {
     date: "2026-02-25",
-    summary: "Docs: Initial developer documentation site launch. API: v1 stable release.",
-  },
-  {
-    date: "2026-02-15",
-    summary: "API: Added low_balance webhook event. Docs: Updated webhooks page.",
+    summary: "Docs: Initial developer documentation site launch.",
   },
   {
     date: "2026-02-01",
@@ -32,7 +38,7 @@ const ChangelogPage = () => {
       <div className="space-y-6">
         {entries.map((entry) => (
           <div key={entry.date} className="pb-6 border-b last:border-b-0">
-            <time className="text-sm font-mono text-accent font-medium">{entry.date}</time>
+            <time className="text-sm font-mono text-muted-foreground font-medium">{entry.date}</time>
             <p className="text-muted-foreground mt-1">{entry.summary}</p>
           </div>
         ))}

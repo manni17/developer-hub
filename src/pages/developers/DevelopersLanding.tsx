@@ -16,13 +16,13 @@ const DevelopersLanding = () => {
               Integrate with Steller
             </h1>
             <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-              API, partner dashboard, and Postman — everything you need to launch digital gift cards.
+              The infrastructure of digital asset distribution. Check your wallet, browse your catalog and place your first order with one API key.
             </p>
             <Link
               to="/developers/getting-started"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-accent-foreground font-medium hover:opacity-90 transition-opacity shadow-sm"
             >
-              Start in under a minute
+              Start with the quickstart
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -35,13 +35,13 @@ const DevelopersLanding = () => {
               {
                 icon: Code2,
                 title: "API",
-                desc: "REST API for catalog, orders, and wallet. Auth with API key.",
+                desc: "REST API for catalog, orders, and wallet. Authenticate with an API key.",
                 link: "/developers/api-reference",
               },
               {
                 icon: LayoutDashboard,
                 title: "Partner dashboard",
-                desc: "Browse catalog, place orders, view wallet and webhook settings.",
+                desc: "Browse your catalog, review orders, check your wallet and webhook settings.",
                 link: "/developers/partner-dashboard",
               },
               {
@@ -100,7 +100,7 @@ const DevelopersLanding = () => {
             href={siteConfig.signupUrl}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border font-medium text-sm hover:bg-secondary transition-colors"
           >
-            Contact Steller
+            Request access
             <ArrowRight className="h-4 w-4" />
           </a>
         </section>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://developers.steler.org/developers</loc></url>
+  <url><loc>https://developers.steler.org/developers/getting-started</loc></url>
+  <url><loc>https://developers.steler.org/developers/api-reference</loc></url>
+  <url><loc>https://developers.steler.org/developers/postman</loc></url>
+  <url><loc>https://developers.steler.org/developers/partner-dashboard</loc></url>
+  <url><loc>https://developers.steler.org/developers/webhooks</loc></url>
+  <url><loc>https://developers.steler.org/developers/going-to-production</loc></url>
+  <url><loc>https://developers.steler.org/developers/environments</loc></url>
+  <url><loc>https://developers.steler.org/developers/error-reference</loc></url>
+  <url><loc>https://developers.steler.org/developers/rate-limits</loc></url>
+  <url><loc>https://developers.steler.org/developers/glossary</loc></url>
+  <url><loc>https://developers.steler.org/developers/faqs</loc></url>
+  <url><loc>https://developers.steler.org/developers/changelog</loc></url>
+  <url><loc>https://developers.steler.org/developers/security</loc></url>
+  <url><loc>https://developers.steler.org/developers/support</loc></url>
+  <url><loc>https://developers.steler.org/developers/status</loc></url>
+</urlset>

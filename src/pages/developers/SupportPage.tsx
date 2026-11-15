@@ -28,13 +28,13 @@ const SupportPage = () => {
 
       <DocSection title="Status">
         <p>
-          Check the current status of Steller services:{" "}
+          How to check service health:{" "}
           <Link to="/developers/status" className="doc-link">Status page →</Link>
         </p>
       </DocSection>
 
       <DocSection title="Contact">
-        <CTAButton href={`mailto:${siteConfig.supportEmail}`}>Contact support</CTAButton>
+        <CTAButton href={`mailto:${siteConfig.supportEmail}?subject=Steller%20developer%20support`}>Contact support</CTAButton>
       </DocSection>
     </DocsLayout>
   );

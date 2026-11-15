@@ -1,0 +1,22 @@
+/* Steller brand tokens — approved cube identity (round 5b). */
+:root {
+  /* Palette (8 colours) */
+  --steller-teal: #06B8BD;
+  --steller-peach: #F09759;
+  --steller-sand: #F2C28E;
+  --steller-magenta: #D66A9D;
+  --steller-blue: #4277B6;
+  --steller-ink: #1A1C1E;
+  --steller-slate: #5C6066;
+  --steller-paper: #F4F3F0;
+
+  /* Derived face shades — not palette colours */
+  --steller-teal-shade: #059397;
+  --steller-blue-tint: #608DC2;
+
+  /* Hairlines only — not a brand colour */
+  --steller-mist: #E7E5E1;
+
+  --steller-font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --steller-tracking-wordmark: -0.035em;
+}

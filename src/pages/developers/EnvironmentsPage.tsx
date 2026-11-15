@@ -2,7 +2,6 @@ import DocsLayout from "@/components/layout/DocsLayout";
 import PageHeader from "@/components/docs/PageHeader";
 import DocSection from "@/components/docs/DocSection";
 import DocTable from "@/components/docs/DocTable";
-import { siteConfig } from "@/config/site";
 import { Link } from "react-router-dom";
 
 const EnvironmentsPage = () => {
@@ -15,12 +14,11 @@ const EnvironmentsPage = () => {
           headers={["Aspect", "Staging", "Production"]}
           rows={[
             ["Purpose", "Development and testing", "Live operations"],
-            ["Base URL", siteConfig.apiBaseUrlStaging, "Provided at go-live"],
+            ["Base URL", "The base URL Steller gave you with your key", "Provided at go-live"],
             ["API key", "Staging key", "Production key"],
-            ["Vendor", "Sandbox / mock fulfillment", "Live vendor (real gift cards)"],
-            ["Wallet", "Test funds", "Real funds"],
-            ["Catalog", "May include test brands", "Production brands only"],
-            ["Dashboard", "Staging dashboard URL", "Production dashboard URL"],
+            ["Fulfilment", "Steller tells you how orders are fulfilled in staging", "Live (real gift cards)"],
+            ["Wallet", "Steller tells you how staging is funded", "Real funds"],
+            ["Catalog", "May differ from production", "Production catalog"],
           ]}
         />
       </DocSection>

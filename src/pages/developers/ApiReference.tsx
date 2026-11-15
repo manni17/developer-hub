@@ -13,9 +13,9 @@ const ApiReference = () => {
 
       <DocSection title="Overview">
         <p>
-          Steller provides a REST API for digital gift card operations. Partners use a prepaid wallet model — 
-          funds are debited at order time. Orders are asynchronous: create an order, then poll for completion.
-          Your catalog is partner-specific.
+          Steller is the infrastructure of digital asset distribution. The REST API covers digital gift card operations.
+          Partners use a prepaid wallet model — funds are debited at order time. Orders are asynchronous: create an order,
+          then poll for completion. Your catalog is partner-specific.
         </p>
       </DocSection>
 
@@ -30,41 +30,61 @@ x-api-key: YOUR_API_KEY`} />
           rows={[
             ["401", "API_KEY_MISSING", "API key not provided"],
             ["403", "API_KEY_INVALID", "API key invalid or revoked"],
+            ["403", "PARTNER_SUSPENDED", "Partner account is suspended; contact Steller"],
+            ["403", "API_KEY_REQUIRED", "An order call was made with a dashboard token; orders use the API key only"],
           ]}
         />
       </DocSection>
 
       <DocSection title="Base URL">
-        <p>All paths are relative to your base URL. Use staging for development; production URL provided at go-live.</p>
+        <p>All paths are relative to your base URL. Steller tells you which base URL to use for each environment when it issues your key. The production URL is provided at go-live.</p>
+      </DocSection>
+
+      <DocSection title="Response envelope">
+        <p>
+          Successful JSON responses typically include <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">status</code>,{" "}
+          <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">data</code>, and{" "}
+          <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">statusCode</code>. Read fields from{" "}
+          <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">data</code> (for example{" "}
+          <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">data.brands</code>,{" "}
+          <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">data.id</code> on orders). The examples below show the envelope with some keys left out.
+        </p>
       </DocSection>
 
       <DocSection title="Order lifecycle">
         <p>
-          <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">POST /api/orders</code> → poll <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/orders/:id</code> → Completed or Failed.
+          <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">POST /api/orders</code> → poll <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/orders/:id</code> → Completed, Failed or Cancelled.
         </p>
         <DocTable
           headers={["Status", "Description"]}
           rows={[
+            ["Pending", "Queued before fulfillment starts. A new order normally shows Processing."],
             ["Processing", "Order accepted, fulfillment in progress"],
             ["Completed", "Gift card delivered; PIN and card data available"],
             ["Failed", "Fulfillment failed; wallet refunded"],
+            ["Cancelled", "Closed by Steller. No further changes. Contact Steller about the wallet."],
           ]}
         />
+        <p className="mt-2 text-muted-foreground text-sm">Completed, Failed and Cancelled are final. Poll no faster than every 5 seconds.</p>
       </DocSection>
 
       <DocSection title="Idempotency">
         <p>
-          Use a unique <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">referenceId</code> per order. 
-          Sending the same referenceId returns the existing order — no double debit.
+          You generate <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">referenceId</code>. A new value returns <strong>202 Accepted</strong>. The same sku, face value, quantity, and referenceId again returns <strong>200 OK</strong> and the original order. The same referenceId with any of those three fields changed returns <strong>409 Conflict</strong>. Omitting it returns <strong>400</strong>.
         </p>
         <CodeBlock language="json" code={`{
-  "sku": "1823256",
-  "faceValue": 1,
+  "sku": "SKU_FROM_CATALOG",
+  "faceValue": 2,
   "quantity": 1,
-  "referenceId": "partner-order-001"
+  "referenceId": "3f6c2b0e-8a41-4d1e-9b7a-5c2f0a1d7e11"
 }`} />
         <p className="mt-2 text-muted-foreground text-sm">
-          Get the <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">sku</code> from <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/partner/catalog/orderable</code>. That endpoint returns only products you can order.
+          Use a sku and face value from your orderable catalog. The values above are placeholders.
+        </p>
+        <p className="mt-2 text-muted-foreground text-sm">
+          Get <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">sku</code> and{" "}
+          <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">minFaceValue</code> from{" "}
+          <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">GET /api/partner/catalog/orderable</code> — only activated products appear there.
         </p>
       </DocSection>
 
@@ -76,40 +96,38 @@ x-api-key: YOUR_API_KEY`} />
             <code className="font-mono text-sm">/api/partner/catalog/orderable</code>
           </p>
           <p>Returns only products activated for your partner account — these are the products you can order. Use the <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">sku</code> from each product when placing orders.</p>
-          <CodeBlock language="json" code={`// Response (abbreviated — real staging data)
+          <CodeBlock language="json" code={`// Response (abbreviated)
 {
-  "brands": [
-    {
-      "name": "Garena Free Fire Global",
-      "currencyCode": "USD",
-      "countryCode": "US",
-      "products": [
-        {
-          "id": 1823256,
-          "name": "Free Fire 100 +10 Diamonds",
-          "sku": "1823256",
-          "minFaceValue": 0.945,
-          "maxFaceValue": 0.945,
-          "partnerPriceMin": 1.2,
-          "partnerPriceMax": 1.2
-        }
-      ]
-    }
-  ],
-  "count": 1,
-  "totalProducts": 5
+  "status": true,
+  "statusCode": 200,
+  "data": {
+    "brands": [
+      {
+        "name": "Example brand",
+        "currencyCode": "USD",
+        "products": [
+          {
+            "sku": "SKU_FROM_CATALOG",
+            "name": "Example product",
+            "minFaceValue": 2.0,
+            "maxFaceValue": 2.0,
+            "price": { "min": 2.1, "max": 2.1, "currencyCode": "USD" }
+          }
+        ]
+      }
+    ],
+    "count": 1,
+    "totalProducts": 1
+  }
 }`} />
           <p className="mt-3 text-sm text-muted-foreground">
             <strong>Key fields:</strong>
           </p>
           <ul className="text-sm text-muted-foreground mt-1 space-y-1">
-            <li><strong>sku</strong> — use this in <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">POST /api/orders</code>.</li>
-            <li><strong>minFaceValue / maxFaceValue</strong> — the denomination range from the vendor. For fixed cards, min = max. Use this as <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">faceValue</code> in your order unless Steller confirms a different denomination (see note below).</li>
-            <li><strong>partnerPriceMin / partnerPriceMax</strong> — the price debited from your wallet per card. This is <em>not</em> the face value; it is what you pay Steller.</li>
+            <li><strong>sku</strong> — use in <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">POST /api/orders</code>.</li>
+            <li><strong>minFaceValue / maxFaceValue</strong> — send as <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">faceValue</code> for fixed cards (min = max). Variable-value products cannot be ordered yet.</li>
+            <li><strong>price.min / price.max</strong> — your partner price for one card. <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">saleTotal</code> on an order is the wallet debit for the whole order. Neither is the <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">faceValue</code> field.</li>
           </ul>
-          <p className="mt-2 p-3 rounded-md bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 text-sm">
-            <strong>Denomination vs. price:</strong> For some cards, <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">minFaceValue</code> may show the vendor cost (e.g. 0.945) rather than the face denomination (e.g. 1.00). When in doubt, confirm the correct <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">faceValue</code> with Steller for your activated products. The test pair in your onboarding materials will show the exact value to use.
-          </p>
         </div>
 
         <div className="mb-4">
@@ -125,7 +143,9 @@ x-api-key: YOUR_API_KEY`} />
             <MethodBadge method="GET" />
             <code className="font-mono text-sm">/api/brand/getCatalog</code>
           </p>
-          <p>Legacy catalog endpoint. Returns your partner-specific catalog. Prefer <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">/api/partner/catalog/orderable</code> for ordering.</p>
+          <p>
+            Legacy catalog endpoint. Use <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">/api/partner/catalog/orderable</code> for ordering.
+          </p>
         </div>
 
         <h3 className="text-lg font-medium mb-3 mt-8 text-foreground">Transactional</h3>
@@ -134,35 +154,46 @@ x-api-key: YOUR_API_KEY`} />
             <MethodBadge method="POST" />
             <code className="font-mono text-sm">/api/orders</code>
           </p>
-          <p>Create a new gift card order. Returns 202 with order ID. Wallet is debited at creation; refunded on failure.</p>
+          <p>Create a gift card order with the API key. HTTP 202 means queued, not finished. The wallet is debited for the sale total. Status Failed, after Steller confirms the failure, refunds that debit. A timeout while Processing does not.</p>
           <DocTable
             headers={["Field", "Type", "Required", "Description"]}
             rows={[
               ["sku", "string", "Yes", "Product SKU from /api/partner/catalog/orderable."],
-              ["faceValue", "number", "Yes", "Card denomination. For fixed cards, use the denomination confirmed by Steller or shown in minFaceValue/maxFaceValue. For variable cards, any value within the min/max range."],
-              ["quantity", "number", "Yes", "Number of cards to order."],
-              ["referenceId", "string", "Yes", "Your unique order reference (max 100 chars). For retries, use the same referenceId."],
+              ["faceValue", "number", "Yes", "The fixed face value for that sku. Send minFaceValue when it equals maxFaceValue."],
+              ["quantity", "number", "Yes", "At least 1, at most 2000. Use 1 for the first order."],
+              ["referenceId", "string", "Yes", "Your unique id per purchase. A UUID is recommended. Reuse it only to retry the same purchase."],
             ]}
           />
-          <CodeBlock language="json" code={`// Request — use sku from orderable catalog; faceValue = card denomination
+          <CodeBlock language="json" code={`// Request
 {
-  "sku": "1823256",
-  "faceValue": 1,
+  "sku": "SKU_FROM_CATALOG",
+  "faceValue": 2,
   "quantity": 1,
-  "referenceId": "partner-order-001"
+  "referenceId": "3f6c2b0e-8a41-4d1e-9b7a-5c2f0a1d7e11"
 }
 
-// Response (202 Accepted) — wallet debited by saleTotal (partner price), not faceValue
+// Response (202 Accepted) — read order id from data.id; wallet debited by data.saleTotal
+// (envelope abbreviated; values are examples)
 {
-  "id": "024372fe-ab37-4190-8c37-9cf668b528a8",
-  "status": "Processing",
-  "total": 1.0,
-  "saleTotal": 1.2,
-  "createdAt": "2026-03-24T05:38:59Z",
-  "cards": []
+  "status": true,
+  "statusCode": 202,
+  "data": {
+    "id": "9d2f6a41-5b0e-4c8a-8e61-2f7d3c9a1b04",
+    "status": "Processing",
+    "total": 2.0,
+    "saleTotal": 2.1,
+    "createdAt": "2026-11-13T15:04:05Z",
+    "cards": [],
+    "isReplay": false,
+    "requestedCount": 1,
+    "deliveredCount": 0,
+    "refundedAmount": 0
+  }
 }`} />
           <p className="mt-2 text-sm text-muted-foreground">
-            <strong>total</strong> is the card denomination. <strong>saleTotal</strong> is your wallet debit (partner price). They will differ based on your pricing agreement.
+            <strong>total</strong> is face value × quantity. <strong>saleTotal</strong> is your wallet debit (partner price for the whole order). They will differ based on your pricing agreement.
+            <strong> requestedCount</strong> is the number of cards ordered, <strong>deliveredCount</strong> the number delivered so far, and <strong>refundedAmount</strong> the amount refunded to your wallet.
+            <strong> isReplay</strong> is true when the response repeats an order you already created (HTTP 200).
           </p>
         </div>
 
@@ -172,24 +203,35 @@ x-api-key: YOUR_API_KEY`} />
             <code className="font-mono text-sm">/api/orders/:id</code>
           </p>
           <p>Poll order status. When Completed, the response includes card data (serial, cardNumber, PIN).</p>
-          <CodeBlock language="json" code={`// Response (Completed)
+          <CodeBlock language="json" code={`// Response (Completed) — envelope abbreviated; card values are placeholders
 {
-  "id": "024372fe-ab37-4190-8c37-9cf668b528a8",
-  "status": "Completed",
-  "total": 1.0,
-  "saleTotal": 1.2,
-  "createdAt": "2026-03-24T05:38:59Z",
-  "cards": [
-    {
-      "serial": "b759bb85-f375-4006-...",
-      "pin": "744",
-      "cardNumber": "1ff889b45def4cee...",
-      "expiryDate": "2027-03-24T05:39:01Z"
-    }
-  ]
+  "status": true,
+  "statusCode": 200,
+  "data": {
+    "id": "9d2f6a41-5b0e-4c8a-8e61-2f7d3c9a1b04",
+    "status": "Completed",
+    "total": 2.0,
+    "saleTotal": 2.1,
+    "createdAt": "2026-11-13T15:04:05Z",
+    "cards": [
+      {
+        "serial": "<serial>",
+        "pin": "<redacted>",
+        "cardNumber": "<redacted>",
+        "expiryDate": "2027-11-13T15:04:07Z"
+      }
+    ],
+    "isReplay": false,
+    "requestedCount": 1,
+    "deliveredCount": 1,
+    "refundedAmount": 0
+  }
 }`} />
           <p className="mt-2 text-muted-foreground text-sm">
             <strong>cardNumber</strong> is the redemption code (gift card code). <strong>pin</strong> is the PIN if the card requires one. Both are only visible when status is Completed.
+          </p>
+          <p className="mt-2 text-muted-foreground text-sm">
+            An unknown order id returns HTTP 404 with the message “Order not found.” See the <Link to="/developers/error-reference" className="doc-link">Error reference</Link>.
           </p>
         </div>
 
@@ -200,10 +242,16 @@ x-api-key: YOUR_API_KEY`} />
             <code className="font-mono text-sm">/api/wallet/me</code>
           </p>
           <p>Returns current partner wallet balance.</p>
-          <CodeBlock language="json" code={`// Response
+          <CodeBlock language="json" code={`// Response (envelope abbreviated)
 {
-  "availableBalance": 998.80,
-  "currency": "USD"
+  "status": true,
+  "statusCode": 200,
+  "data": {
+    "id": "5e8a1c7d-3b24-4f9a-a0d6-7c1e2b9f4a30",
+    "partnerId": 12,
+    "availableBalance": 998.80,
+    "currencyCode": "USD"
+  }
 }`} />
         </div>
 
@@ -212,7 +260,11 @@ x-api-key: YOUR_API_KEY`} />
             <MethodBadge method="GET" />
             <code className="font-mono text-sm">/api/wallet/transactions</code>
           </p>
-          <p>Returns wallet transaction history (debits, credits, refunds). Supports pagination query params.</p>
+          <p>
+            Returns wallet transaction history (debits, credits, refunds). Query parameters:{" "}
+            <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">page</code> (default 1) and{" "}
+            <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">pageSize</code> (default 25).
+          </p>
         </div>
 
         <h3 className="text-lg font-medium mb-3 mt-8 text-foreground">Webhooks</h3>
@@ -235,7 +287,7 @@ x-api-key: YOUR_API_KEY`} />
             <MethodBadge method="GET" />
             <code className="font-mono text-sm">/api/partner/webhook/events</code>
           </p>
-          <p>List recent webhook-like order events for catch-up and replay workflows.</p>
+          <p>List your most recent completed or failed orders as events, for catch-up (default 50, at most 200). Steller does not replay webhooks.</p>
         </div>
       </DocSection>
 
@@ -252,26 +304,29 @@ x-api-key: YOUR_API_KEY`} />
       </DocSection>
 
       <DocSection title="Rate limits & retries">
-        <p>Redis-based distributed rate limiting per endpoint, per second. See <Link to="/developers/rate-limits" className="doc-link">Rate limits</Link>.</p>
+        <p>Order creation is 1 request per second, burst 2, then HTTP 429. All calls with one API key share 100 requests per minute. See <Link to="/developers/rate-limits" className="doc-link">Rate limits</Link>.</p>
         <DocTable
           headers={["Scenario", "Action"]}
           rows={[
             ["429 Too Many Requests", "Wait for Retry-After header, then retry"],
-            ["5xx Server Error", "Retry with exponential back-off"],
-            ["Order creation retry", "Use the same referenceId to avoid double debit"],
+            ["5xx Server Error", "Retry with exponential back-off. If a Retry-After header is present, wait at least that long."],
+            ["503 on order create", "No order was created. Wait for Retry-After, then retry with the same referenceId."],
+            ["Order creation retry", "Same referenceId and the same sku, face value, and quantity"],
+            ["409 on create", "That referenceId already belongs to a different order. Use a new referenceId"],
           ]}
         />
       </DocSection>
 
       <DocSection title="Integration checklist">
         <ul>
-          <li>✅ API key stored securely (not in client-side code)</li>
-          <li>✅ Unique referenceId per order</li>
-          <li>✅ Poll order status until terminal state</li>
-          <li>✅ Handle 429 and 5xx with retries</li>
-          <li>✅ Webhook signature verification implemented</li>
-          <li>✅ Never log PINs or full card data</li>
-          <li>✅ Tested end-to-end on staging</li>
+          <li>API key stored securely (not in client-side code)</li>
+          <li>Unique referenceId per order</li>
+          <li>Poll order status until a final state (Completed, Failed or Cancelled)</li>
+          <li>Handle 429 and 5xx with retries</li>
+          <li>Webhook URL and secret configured</li>
+          <li>Webhook signature verification implemented</li>
+          <li>Never log PINs or full card data</li>
+          <li>Tested end-to-end on staging</li>
         </ul>
       </DocSection>
     </DocsLayout>

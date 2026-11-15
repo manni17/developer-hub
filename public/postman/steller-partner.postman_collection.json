@@ -1,0 +1,261 @@
+{
+  "info": {
+    "name": "Steller Partner API",
+    "description": "Run this after Steller has issued your account, funded the wallet, activated products, and given you an API key. Paste base_url and api_key, then run the folder \"60-second first order\" with the Collection Runner.\n\nThe folder places one order: catalog, create (202), identical retry (200), different body with the same referenceId (409), then poll until Completed or Failed. Card values are not written to the Postman console.\n\nAuth header is x-api-key. Dashboard login is not used.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      { "key": "key", "value": "x-api-key", "type": "string" },
+      { "key": "value", "value": "{{api_key}}", "type": "string" },
+      { "key": "in", "value": "header", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "base_url", "value": "https://api-v2.steler.org" },
+    { "key": "api_key", "value": "" },
+    { "key": "sku", "value": "" },
+    { "key": "faceValue", "value": "" },
+    { "key": "referenceId", "value": "" },
+    { "key": "orderId", "value": "" },
+    { "key": "polls", "value": "0" }
+  ],
+  "item": [
+    {
+      "name": "60-second first order",
+      "description": "Run this folder in order. It creates one real order on the account for api_key.",
+      "item": [
+        {
+          "name": "Wallet",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/wallet/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('wallet HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "const wallet = body.data || body;",
+                  "pm.test('balance is present', function () {",
+                  "  pm.expect(wallet.availableBalance).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Orderable catalog",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/partner/catalog/orderable"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('catalog HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "const brands = (body.data && body.data.brands) || [];",
+                  "let sku = '';",
+                  "let face = '';",
+                  "brands.forEach(function (brand) {",
+                  "  (brand.products || []).forEach(function (product) {",
+                  "    if (!sku && product.sku && product.minFaceValue !== undefined && product.minFaceValue !== null) {",
+                  "      sku = String(product.sku);",
+                  "      face = String(product.minFaceValue);",
+                  "    }",
+                  "  });",
+                  "});",
+                  "pm.test('an activated product is present', function () { pm.expect(sku).to.not.eql(''); });",
+                  "pm.collectionVariables.set('sku', sku);",
+                  "pm.collectionVariables.set('faceValue', face);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"{{sku}}\",\n  \"faceValue\": {{faceValue}},\n  \"quantity\": 1,\n  \"referenceId\": \"{{referenceId}}\"\n}"
+            },
+            "url": "{{base_url}}/api/orders"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('referenceId', pm.variables.replaceIn('{{$guid}}'));",
+                  "pm.collectionVariables.set('polls', '0');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('create HTTP 202', function () { pm.response.to.have.status(202); });",
+                  "const body = pm.response.json();",
+                  "const id = body.data && body.data.id;",
+                  "pm.test('order id returned', function () { pm.expect(id).to.be.ok; });",
+                  "if (id) pm.collectionVariables.set('orderId', id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Replay same order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"{{sku}}\",\n  \"faceValue\": {{faceValue}},\n  \"quantity\": 1,\n  \"referenceId\": \"{{referenceId}}\"\n}"
+            },
+            "url": "{{base_url}}/api/orders"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('replay HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "const id = body.data && body.data.id;",
+                  "pm.test('replay returns the same order', function () {",
+                  "  pm.expect(id).to.eql(pm.collectionVariables.get('orderId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mismatch same referenceId",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"{{sku}}\",\n  \"faceValue\": {{faceValue}},\n  \"quantity\": 2,\n  \"referenceId\": \"{{referenceId}}\"\n}"
+            },
+            "url": "{{base_url}}/api/orders"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const start = Date.now();",
+                  "while (Date.now() - start < 2000) {}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('mismatch HTTP 409', function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Poll order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/orders/{{orderId}}"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const n = Number(pm.collectionVariables.get('polls') || 0);",
+                  "if (n > 0) {",
+                  "  const start = Date.now();",
+                  "  while (Date.now() - start < 2000) {}",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('poll HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "const data = body.data || body;",
+                  "const status = data.status;",
+                  "pm.test('status is a known order state', function () {",
+                  "  pm.expect(['Pending', 'Processing', 'Completed', 'Failed', 'Cancelled']).to.include(status);",
+                  "});",
+                  "if (status === 'Completed') {",
+                  "  const cards = data.cards || [];",
+                  "  pm.test('completed order includes a card', function () { pm.expect(cards.length).to.be.above(0); });",
+                  "  pm.collectionVariables.set('polls', '0');",
+                  "} else if (status === 'Failed' || status === 'Cancelled') {",
+                  "  pm.collectionVariables.set('polls', '0');",
+                  "} else {",
+                  "  const n = Number(pm.collectionVariables.get('polls') || 0);",
+                  "  if (n < 30) {",
+                  "    pm.collectionVariables.set('polls', String(n + 1));",
+                  "    postman.setNextRequest('Poll order');",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Account reads",
+      "description": "Optional. These do not place an order.",
+      "item": [
+        {
+          "name": "Wallet transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/wallet/transactions"
+          }
+        },
+        {
+          "name": "Webhook config",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/partner/webhook"
+          }
+        }
+      ]
+    }
+  ]
+}
