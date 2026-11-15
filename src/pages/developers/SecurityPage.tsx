@@ -13,7 +13,7 @@ const SecurityPage = () => {
           <li>Store your API key securely (environment variables, secrets manager)</li>
           <li>Use a separate API key for each environment. During key rotation two keys work briefly.</li>
           <li>Send only in the <code className="bg-code-bg px-1.5 py-0.5 rounded text-sm font-mono">x-api-key</code> header, never in URLs or client-side code</li>
-          <li>If a key may have been exposed, contact Steller to rotate it</li>
+          <li>If a key may have been exposed, contact Steller straight away so the key can be replaced</li>
         </ul>
       </DocSection>
 
